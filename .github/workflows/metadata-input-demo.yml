@@ -1,0 +1,42 @@
+name: Metadata Input Demo
+
+on:
+  workflow_dispatch:
+    inputs:
+      landing_zone_name:
+        description: Landing zone name (for example bu01 or bu02)
+        required: true
+        default: bu01
+      environment:
+        description: Environment (dev, test, pprd, or prod)
+        required: true
+        default: dev
+      service_domain:
+        description: Service domain (for example sd001 or sd002)
+        required: true
+        default: sd001
+
+jobs:
+  run-metadata-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout metadata utility repository
+        uses: actions/checkout@v4
+        with:
+          repository: ykumaraus/ecdp-matadata-utility
+          ref: feature/py_gha_code
+          path: ecdp-metadata-utility
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run metadata job
+        working-directory: ecdp-metadata-utility
+        run: |
+          bash ./run_metadata_job.sh \
+            "${{ github.event.inputs.landing_zone_name }}" \
+            "${{ github.event.inputs.environment }}" \
+            "${{ github.event.inputs.service_domain }}"
