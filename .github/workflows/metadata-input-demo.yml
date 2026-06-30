@@ -21,11 +21,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Display workflow inputs
+        run: |
+          echo "Workflow inputs received:"
+          echo "Landing zone: ${{ github.event.inputs.landing_zone_name }}"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Service domain: ${{ github.event.inputs.service_domain }}"
+
       - name: Checkout metadata utility repository
         uses: actions/checkout@v4
         with:
           repository: ykumaraus/ecdp-matadata-utility
-          ref: feature/py_gha_code
+          ref: main
           path: ecdp-metadata-utility
 
       - name: Set up Python
@@ -36,6 +43,7 @@ jobs:
       - name: Run metadata job
         working-directory: ecdp-metadata-utility
         run: |
+          echo "Calling metadata script..."
           bash ./run_metadata_job.sh \
             "${{ github.event.inputs.landing_zone_name }}" \
             "${{ github.event.inputs.environment }}" \
